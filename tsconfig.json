@@ -6,6 +6,30 @@
       "@/*": [
         "./src/*"
       ],
+      "@features": [
+        "./src/features"
+      ],
+      "@features/*": [
+        "./src/features/*"
+      ],
+      "@shared": [
+        "./src/shared"
+      ],
+      "@shared/*": [
+        "./src/shared/*"
+      ],
+      "@/features": [
+        "./src/features"
+      ],
+      "@/features/*": [
+        "./src/features/*"
+      ],
+      "@/shared": [
+        "./src/shared"
+      ],
+      "@/shared/*": [
+        "./src/shared/*"
+      ],
       "@/assets/*": [
         "./assets/*"
       ]
