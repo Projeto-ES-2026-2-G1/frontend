@@ -1,5 +1,6 @@
-import { HomeScreen } from '@features/home';
+import { Redirect } from 'expo-router';
 
 export default function IndexRoute() {
-  return <HomeScreen />;
+  // A entrada do app é a tela de login, como no site original.
+  return <Redirect href="/login" />;
 }
