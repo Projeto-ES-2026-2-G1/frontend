@@ -8,6 +8,28 @@ export function formatCurrency(value: number): string {
   }).format(value);
 }
 
+const PT_BR_MONTHS = [
+  'janeiro',
+  'fevereiro',
+  'março',
+  'abril',
+  'maio',
+  'junho',
+  'julho',
+  'agosto',
+  'setembro',
+  'outubro',
+  'novembro',
+  'dezembro',
+];
+
+/**
+ * Formats a date as "outubro de 2026" (pt-BR), used in the dashboard subtitle.
+ */
+export function formatMonthYear(date: Date): string {
+  return `${PT_BR_MONTHS[date.getMonth()]} de ${date.getFullYear()}`;
+}
+
 /**
  * Format a CNPJ digits string (00.000.000/0001-00).
  */
