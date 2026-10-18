@@ -15,26 +15,23 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import Logo from './Logo';
+import LogoText from './LogoText'; 
 import { colors as theme, radius, shadow } from '../../tema';
 
-/* ───────────── Tema ─────────────
- * Usa o mesmo tema da TelaLogin. As cores extras abaixo só existem aqui;
- * se preferir, mova-as para ../features/tema. */
 const colors = {
   ...theme,
   bg: theme.background,
   card: theme.surface,
   muted: theme.textMuted,
-  primarySoft: '#93BF85',
-  primaryTint: '#E3F0DE',
-  track: '#ECEEEA',
-  danger: '#B42318',
-  dangerTint: '#FBE3E1',
-  success: '#1F6B3A',
+  primarySoft: theme.primarySoft,
+  primaryTint: theme.primaryTint,
+  track: theme.track,
+  danger: theme.danger,
+  dangerTint: theme.dangerTint,
+  success: theme.success,
 };
 
-/* ───────────── Tipos & dados mock ───────────── */
-type Kpi = { id: string; label: string; value: string; caption: string; highlight?: boolean };
+type Kpi = { id: string; label: string; value: string; caption: string; highlight?: boolean; color?: boolean };
 type Shortcut = { id: string; label: string; icon: keyof typeof Feather.glyphMap };
 type Entry = { id: string; title: string; category: string; date: string; amount: number };
 type Category = { name: string; pct: number; strong?: boolean };
@@ -44,7 +41,7 @@ const KPIS: Kpi[] = [
   { id: '1', label: 'Saldo atual', value: 'R$ 18.450,00', caption: 'Todas as contas', highlight: true },
   { id: '2', label: 'Receitas', value: 'R$ 24.870,00', caption: '+12% vs. mês anterior' },
   { id: '3', label: 'Despesas', value: 'R$ 6.420,00', caption: '-4% vs. mês anterior' },
-  { id: '4', label: 'A receber', value: 'R$ 3.200,00', caption: '1 cobrança pendente' },
+  { id: '4', label: 'A receber', value: 'R$ 3.200,00', caption: '1 cobrança pendente', color: true },
 ];
 
 const CASHFLOW = [
@@ -97,13 +94,13 @@ const { width: SCREEN_W } = Dimensions.get('window');
 const H_PAD = 24;
 const KPI_W = SCREEN_W * 0.42;
 const KPI_GAP = 12;
-const LIST_MAX_H = 270; // altura máxima das listas internas roláveis
+const LIST_MAX_H = 270;
 
-/* ───────────── Componentes ───────────── */
 function Header() {
   return (
-    <View style={s.header}>
-      <Logo size={24} />
+    <View style={s.headerRow}>
+      <Logo size={44} />
+      <LogoText size={26} style={{marginLeft: 10}} />
       <TouchableOpacity style={s.bell} accessibilityLabel="Notificações">
         <Feather name="bell" size={20} color={colors.text} />
       </TouchableOpacity>
@@ -131,12 +128,12 @@ function KpiCarousel() {
         onScroll={onScroll}
         scrollEventThrottle={16}
         renderItem={({ item }) => (
-          <View style={[s.kpi, item.highlight && s.kpiHighlight]}>
-            <Text style={[s.kpiLabel, item.highlight && s.onPrimary]}>{item.label}</Text>
-            <Text style={[s.kpiValue, item.highlight && s.onPrimary]} numberOfLines={1} adjustsFontSizeToFit>
+          <View style={[s.kpi, item.highlight && s.kpiHighlight, item.color && s.kpiColor]}>
+            <Text style={[s.kpiLabel, item.highlight && s.onPrimary, item.color && s.primary]}>{item.label}</Text>
+            <Text style={[s.kpiValue, item.highlight && s.onPrimary, item.color && s.primary]} numberOfLines={1} adjustsFontSizeToFit>
               {item.value}
             </Text>
-            <Text style={[s.kpiCaption, item.highlight ? s.onPrimary : { color: colors.success }]}>
+            <Text style={[s.kpiCaption, item.highlight ? s.onPrimary : item.color ? { color: colors.primary } : {color: colors.success}]}>
               {item.caption}
             </Text>
           </View>
@@ -326,7 +323,6 @@ export function BottomTabBar({ active = 'inicio', onChange }: { active?: TabKey;
   );
 }
 
-/* ───────────── Tela ───────────── */
 type Props = { onLogout?: () => void };
 
 export default function TelaInicio(_props: Props) {
@@ -369,7 +365,6 @@ export default function TelaInicio(_props: Props) {
   );
 }
 
-/* ───────────── Estilos ───────────── */
 const s = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.bg },
   mx: { marginHorizontal: H_PAD },
@@ -377,16 +372,17 @@ const s = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   onPrimary: { color: '#fff' },
+  primary: { color: theme.primary},
 
-  header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 8 },
-  logo: { width: 44, height: 44, borderRadius: 22, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
+  headerRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 20 },
+  logo: { width: 60, height: 60, borderRadius: 30, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center' },
   brand: { fontSize: 24, fontWeight: '800', color: colors.primary },
   bell: { width: 36, height: 36, borderRadius: 18, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center' },
 
-  hello: { fontSize: 19, fontWeight: '700', color: colors.primary, marginTop: 20 },
+  hello: { fontSize: 19, fontWeight: '700', color: colors.primary, marginTop: 18 },
   subtitle: { fontSize: 12, color: colors.muted, marginTop: 4 },
   search: {
-    flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 16, paddingHorizontal: 14, height: 40,
+    flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 30, paddingHorizontal: 14, height: 40,
     borderRadius: radius.md, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.card,
   },
   searchInput: { flex: 1, fontSize: 13, color: colors.text },
@@ -395,6 +391,7 @@ const s = StyleSheet.create({
   kpi: { width: KPI_W, minHeight: 108, borderRadius: radius.lg, ...shadow, backgroundColor: colors.card, padding: 16, justifyContent: 'space-between' },
   kpiHighlight: { backgroundColor: colors.primary },
   kpiLabel: { fontSize: 11, color: colors.muted },
+  kpiColor: {backgroundColor: colors.primarySoft},
   kpiValue: { fontSize: 18, fontWeight: '800', color: colors.text, marginVertical: 8 },
   kpiCaption: { fontSize: 10, color: colors.muted },
   dots: { flexDirection: 'row', justifyContent: 'center', gap: 6, marginTop: 10 },

@@ -6,6 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import  Logo  from '../features/home/components/Logo';
+import LogoText from '../features/home/components/LogoText';
 import { colors, radius, shadow } from '../features/tema';
 
 type Props = {
@@ -28,9 +29,10 @@ export default function TelaLogin({ onLogin, onForgotPassword, onSignUp }: Props
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-          <View style={styles.header}>
-            <Logo size={30} />
-            <Text style={styles.tagline}>Seu negócio, mais simples.</Text>
+          <View style={styles.headerColumn}>
+            <Logo size={90} />
+            <LogoText size={32} style={{marginTop: 12}} />
+            <Text style={styles.tagline}>Seu financeiro na palma da mão.</Text>
           </View>
 
           <View style={styles.card}>
@@ -97,7 +99,7 @@ export default function TelaLogin({ onLogin, onForgotPassword, onSignUp }: Props
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   container: { flexGrow: 1, paddingHorizontal: 24, paddingTop: 48, paddingBottom: 24 },
-  header: { alignItems: 'center', marginBottom: 32 },
+  headerColumn: { alignItems: 'center', marginBottom: 24 },
   tagline: { marginTop: 8, fontSize: 13, color: colors.textMuted },
   card: { backgroundColor: colors.surface, borderRadius: radius.lg, padding: 24, ...shadow },
   title: { fontSize: 32, fontWeight: '800', color: colors.primary },

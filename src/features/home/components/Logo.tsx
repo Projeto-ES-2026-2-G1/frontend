@@ -1,18 +1,25 @@
 import React from 'react';
-import { Text, StyleSheet, TextStyle } from 'react-native';
-import { colors } from '../../tema';
+import { Image, StyleSheet, ImageStyle } from 'react-native';
 
-export default function Logo({ size = 28, style }: { size?: number; style?: TextStyle }) {
+type LogoProps = {
+  size?: number;
+  style?: ImageStyle;
+};
+
+export default function Logo({ size = 90, style }: LogoProps) {
   return (
-    <Text style={[styles.base, { fontSize: size }, style]}>
-      <Text style={styles.bold}>Simpli</Text>
-      <Text style={styles.light}>Mei</Text>
-    </Text>
+      <Image
+        source={require('../../../../assets/images/logo-simplimei.jpg')}
+        style={[
+          styles.logoImage,
+          { width: size, height: size, borderRadius: size / 2 },
+          style,
+        ]}
+        resizeMode="cover"
+      />
   );
 }
 
 const styles = StyleSheet.create({
-  base: { color: colors.primary, letterSpacing: -0.5 },
-  bold: { fontWeight: '800' },
-  light: { fontWeight: '400' },
+  logoImage: {},
 });
