@@ -4,22 +4,22 @@
     "slug": "simplimei",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/logo-simplimei.jpg",
+    "icon": "./assets/images/logo-simplimei.png",
     "scheme": "simplimei",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/logo-simplimei.jpg"
+      "icon": "./assets/images/logo-simplimei.png"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#00412E",
-        "foregroundImage": "./assets/images/logo-simplimei.jpg"
+        "foregroundImage": "./assets/images/logo-simplimei.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/logo-simplimei.png"
     },
     "plugins": [
       "expo-router",
@@ -27,7 +27,7 @@
         "expo-splash-screen",
         {
           "backgroundColor": "#00412E",
-          "image": "./assets/images/logo-simplimei.jpg",
+          "image": "./assets/images/logo-simplimei.png",
           "imageWidth": 76
         }
       ]

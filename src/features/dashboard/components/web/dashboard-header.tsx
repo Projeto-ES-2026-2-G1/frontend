@@ -7,7 +7,7 @@ import {
   View,
 } from 'react-native';
 import { BrandColors, FontFamily, formatMonthYear } from '@shared';
-import type { FinancialContext } from '../types';
+import type { FinancialContext } from '../../types';
 import { ContextSelector } from './context-selector';
 import { PlusIcon } from './icons';
 

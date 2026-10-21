@@ -1,7 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { BrandColors, FontFamily } from '@shared';
-import type { FinancialContext } from '../types';
+import type { FinancialContext } from '../../types';
 
 const CONTEXT_OPTIONS: { value: FinancialContext; label: string }[] = [
   { value: 'todos', label: 'Todos' },

@@ -1,6 +1,11 @@
-export * from './auth-card';
-export * from './field';
-export * from './icons';
-export * from './login-card';
 export * from './login-screen';
-export * from './signup-card';
+export { LoginScreen as LoginScreenWeb } from './web/login-screen';
+export {
+  LoginScreenMobile,
+  type LoginScreenMobileProps,
+} from './mobile/login-screen';
+export * from './web/auth-card';
+export * from './web/field';
+export * from './web/icons';
+export * from './web/login-card';
+export * from './web/signup-card';

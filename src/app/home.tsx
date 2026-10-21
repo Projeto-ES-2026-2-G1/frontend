@@ -1,6 +1,5 @@
-import React from 'react';
-import TelaInicialMobile from '../features/home/components/TelaInicialMobile';
+import { Redirect } from 'expo-router';
 
 export default function HomeRoute() {
-  return <TelaInicialMobile />;
+  return <Redirect href="/dashboard" />;
 }

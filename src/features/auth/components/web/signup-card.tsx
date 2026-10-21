@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import type { TextInput } from 'react-native';
-import type { AuthCardHandle } from '../types';
+import type { AuthCardHandle } from '../../types';
 import { AuthCard, PrimaryButton, SwitchNotice } from './auth-card';
 import { Field } from './field';
 

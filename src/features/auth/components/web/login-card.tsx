@@ -1,8 +1,8 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 import type { TextInput } from 'react-native';
 import { router } from 'expo-router';
-import { logIn } from '../service';
-import type { AuthCardHandle } from '../types';
+import { logIn } from '../../service';
+import type { AuthCardHandle } from '../../types';
 import { ActionLink, AuthCard, PrimaryButton, SwitchNotice } from './auth-card';
 import { Field } from './field';
 
