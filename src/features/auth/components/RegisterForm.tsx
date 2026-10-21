@@ -18,12 +18,20 @@ export function RegisterForm() {
 
     try {
       setLoading(true);
-      const response = await registerUser({ name, email, password, cpfCnpj, phone });
-      
+      await registerUser({
+        name,
+        email,
+        password,
+        cpfCnpj,
+        phone,
+      });
+
       Alert.alert('Sucesso!', 'Usuário cadastrado com sucesso.');
-      console.log('Token recebido:', response.token);
-    } catch (error: any) {
-      Alert.alert('Erro no cadastro', error.message);
+    } catch (error) {
+      Alert.alert(
+        'Erro no cadastro',
+        error instanceof Error ? error.message : 'Não foi possível cadastrar o usuário.',
+      );
     } finally {
       setLoading(false);
     }
@@ -79,8 +87,8 @@ export function RegisterForm() {
         onChangeText={setPassword}
       />
 
-      <TouchableOpacity 
-        style={styles.button} 
+      <TouchableOpacity
+        style={styles.button}
         onPress={handleRegister}
         disabled={loading}
       >
