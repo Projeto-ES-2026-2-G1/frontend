@@ -112,7 +112,7 @@ export function LoginScreenMobile({
 
             <Text style={styles.signup}>
               Não tem uma conta?{' '}
-              <Text style={styles.signupLink} onPress={onSignUp}>
+              <Text style={styles.signupLink} onPress={() => router.push('/cadastro')}>
                 Cadastre-se
               </Text>
             </Text>
