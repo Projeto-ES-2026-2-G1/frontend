@@ -1,0 +1,44 @@
+# Version control & CI
+.git
+.gitignore
+.github
+
+# Dependencies & local caches (installed cleanly inside isolated Docker stage)
+node_modules
+.npm
+.expo
+.metro-health-check*
+
+# Build & export outputs
+dist
+web-build
+
+# Native build directories (not needed for web export)
+ios
+android
+.kotlin
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.pem
+
+# Environment & local overrides
+.env*.local
+
+# Logs, editor & OS artifacts
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+*.tsbuildinfo
+.DS_Store
+Thumbs.db
+
+# Documentation & agent instructions (prevent cache invalidation on docs edits)
+README.md
+AGENTS.md
+LICENSE
+AUDIT.md
+Dockerfile*
+.dockerignore
