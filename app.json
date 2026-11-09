@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "",
+    "name": "simplimei",
     "slug": "simplimei",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -15,7 +15,8 @@
         "backgroundColor": "#00412E",
         "foregroundImage": "./assets/images/logo-simplimei.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.simplimei.simplimei"
     },
     "web": {
       "output": "static",
@@ -35,6 +36,18 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "e3c24251-09a4-4125-b6c2-4343de977edd"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e3c24251-09a4-4125-b6c2-4343de977edd"
     }
   }
 }
