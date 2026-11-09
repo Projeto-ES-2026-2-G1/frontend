@@ -4,6 +4,7 @@
 import React, { useMemo, useState } from "react";
 import {
   ActivityIndicator,
+  Image,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -18,10 +19,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from 'expo-router';
 import { logIn } from '../../../auth/service';
+import { Logo, LogoText } from '@shared/components';
+import { colors, radius, shadow } from '@shared/constants';
+
 
 /* ------------------------------------------------------------------ */
 /* Design tokens                                                       */
 /* ------------------------------------------------------------------ */
+
+
 const THEME = {
   colors: {
     background: "#E8EBE6",
@@ -53,7 +59,7 @@ const THEME = {
   minPasswordLength: 8,
 } as const;
 
-const C = THEME.colors;
+const C = colors;
 const S = THEME.spacing;
 
 /* ------------------------------------------------------------------ */
@@ -127,7 +133,7 @@ function PrimaryButton({ title, onPress, disabled, loading }: PrimaryButtonProps
       ]}
     >
       {loading ? (
-        <ActivityIndicator color={C.onPrimary} />
+        <ActivityIndicator color={C.surface} />
       ) : (
         <Text style={styles.buttonText}>{title}</Text>
       )}
@@ -194,13 +200,19 @@ export function CadastroScreenMobile({ onGoToLogin, onSuccess }: CadastroScreenM
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
-          <View style={styles.header}>
-            <View style={styles.logo}>
-              <MaterialCommunityIcons name="hand-coin-outline" size={44} color={C.onPrimary} />
-            </View>
+          {/* <View style={styles.header}>
+            <Image
+              source={require("../../../../../assets/images/logo-simplimei.png")}
+              style={styles.logo}
+              resizeMode="contain"
+              accessibilityLabel="SimpleMEI"
+            />
             <Text style={styles.brand}>
-              <Text style={styles.brandBold}>Simpli</Text>Mei
-            </Text>
+              <Text style={styles.brandBold}>Simpli</Text>MEI
+            </Text> */}
+          <View style={styles.header}>
+            <Logo />
+            <LogoText />
             <Text style={styles.tagline}>Seu financeiro na palma da mão.</Text>
           </View>
 
@@ -311,48 +323,45 @@ const styles = StyleSheet.create({
   brandBold: { fontFamily: F.title },
   tagline: { fontFamily: F.regular, fontSize: FS.small + 1, color: C.textMuted, marginTop: S.xs },
   card: {
-    backgroundColor: C.card,
-    borderRadius: THEME.radius.card,
+    backgroundColor: C.surface,
+    borderRadius: radius.xl,
     paddingHorizontal: S.lg,
     paddingTop: S.lg + S.xxs,
+    ...shadow,
     paddingBottom: S.lg + S.xxs,
-    shadowColor: C.shadow,
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 4 },
     elevation: 3,
   },
   title: { fontFamily: F.title, fontSize: FS.title, color: C.primary },
   subtitle: { fontFamily: F.regular, fontSize: FS.body, color: C.primary, marginTop: S.xxs, marginBottom: S.lg + S.xxs },
   field: { marginBottom: S.lg - S.xxs },
-  label: { fontFamily: F.bold, fontSize: FS.label - 1, color: C.label, marginBottom: S.sm },
+  label: { fontFamily: F.bold, fontSize: FS.label - 1, color: C.primary, marginBottom: S.sm },
   inputWrap: {
     height: THEME.sizes.input,
     borderWidth: 1,
     borderColor: C.border,
-    borderRadius: THEME.radius.input,
+    borderRadius: radius.md,
     paddingHorizontal: S.md - S.xxs,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: C.card,
+    backgroundColor: C.surface,
   },
-  inputWrapFocused: { borderColor: C.borderFocus },
-  inputWrapError: { borderColor: C.error, backgroundColor: C.errorBg },
+  inputWrapFocused: { borderColor: C.primary },
+  inputWrapError: { borderColor: C.danger, backgroundColor: C.dangerTint },
   input: { flex: 1, height: "100%", fontFamily: F.regular, fontSize: FS.body, color: C.text },
   inputLarge: { fontSize: FS.input + 2 },
   toggle: { fontFamily: F.bold, fontSize: FS.small, color: C.primary, marginLeft: S.xs },
-  errorText: { fontFamily: F.medium, fontSize: FS.small, color: C.error, marginTop: S.xxs + 2 },
+  errorText: { fontFamily: F.medium, fontSize: FS.small, color: C.danger, marginTop: S.xxs + 2 },
   button: {
     height: THEME.sizes.button,
-    borderRadius: THEME.radius.button,
+    borderRadius: radius.md,
     backgroundColor: C.primary,
     alignItems: "center",
     justifyContent: "center",
     marginTop: S.xxs,
   },
-  buttonDisabled: { backgroundColor: C.primaryDisabled },
+  buttonDisabled: { opacity: 0.6 },
   buttonPressed: { opacity: 0.9 },
-  buttonText: { fontFamily: F.bold, fontSize: FS.button, color: C.onPrimary },
+  buttonText: { fontFamily: F.bold, fontSize: FS.button, color: C.surface },
   footerText: { fontFamily: F.regular, fontSize: FS.label, color: C.text, textAlign: "center", marginTop: S.lg },
   link: { fontFamily: F.bold, color: C.primary },
   secure: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: S.xs - 2, marginTop: S.lg + S.xxs },
