@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   KeyboardAvoidingView,
@@ -12,8 +11,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Logo, LogoText } from '@shared/components';
-import { colors, radius, shadow } from '@shared';
+import { Logo, LogoText, PrimaryButton, TextField } from '@shared/components';
+import { colors, FontFamily, radius, shadow } from '@shared/constants';
 import { logIn } from '../../service';
 
 export interface LoginScreenMobileProps {
@@ -22,16 +21,16 @@ export interface LoginScreenMobileProps {
   onSignUp?: () => void;
 }
 
+const MIN_PASSWORD_LENGTH = 8;
+
 export function LoginScreenMobile({
   onLogin,
   onForgotPassword,
-  onSignUp,
 }: LoginScreenMobileProps) {
   const [login, setLogin] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
 
-  const canSubmit = login.trim().length > 0 && password.length >= 8;
+  const canSubmit = login.trim().length > 0 && password.length >= MIN_PASSWORD_LENGTH;
 
   function handleLogin() {
     if (onLogin) {
@@ -45,7 +44,7 @@ export function LoginScreenMobile({
   return (
     <SafeAreaView style={styles.safe}>
       <KeyboardAvoidingView
-        style={{ flex: 1 }}
+        style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView
@@ -64,51 +63,31 @@ export function LoginScreenMobile({
               Acesse sua conta com CPF, CNPJ ou e-mail.
             </Text>
 
-            <Text style={styles.label}>CPF, CNPJ ou e-mail</Text>
-            <TextInput
-              style={styles.input}
+            <TextField
+              label="CPF, CNPJ ou e-mail"
+              placeholder="000.000.000-00"
               value={login}
               onChangeText={setLogin}
-              placeholder="000.000.000-00"
-              placeholderTextColor={colors.placeholder}
               autoCapitalize="none"
               autoCorrect={false}
               keyboardType="email-address"
+              style={styles.loginInput}
             />
 
-            <Text style={styles.label}>Senha</Text>
-            <View style={styles.passwordWrapper}>
-              <TextInput
-                style={styles.passwordInput}
-                value={password}
-                onChangeText={setPassword}
-                placeholder="Mínimo de 8 caracteres"
-                placeholderTextColor={colors.placeholder}
-                secureTextEntry={!showPassword}
-                autoCapitalize="none"
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword((v) => !v)}
-                hitSlop={10}
-              >
-                <Text style={styles.showText}>
-                  {showPassword ? 'Ocultar' : 'Mostrar'}
-                </Text>
-              </TouchableOpacity>
-            </View>
+            <TextField
+              label="Senha"
+              placeholder={`Mínimo de ${MIN_PASSWORD_LENGTH} caracteres`}
+              value={password}
+              onChangeText={setPassword}
+              autoCapitalize="none"
+              secureToggle
+            />
 
             <TouchableOpacity style={styles.forgot} onPress={onForgotPassword}>
               <Text style={styles.forgotText}>Esqueci minha senha</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.button, !canSubmit && { opacity: 0.6 }]}
-              disabled={!canSubmit}
-              onPress={handleLogin}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.buttonText}>Entrar</Text>
-            </TouchableOpacity>
+            <PrimaryButton title="Entrar" onPress={handleLogin} disabled={!canSubmit} />
 
             <Text style={styles.signup}>
               Não tem uma conta?{' '}
@@ -131,6 +110,7 @@ export function LoginScreenMobile({
 export default LoginScreenMobile;
 
 const styles = StyleSheet.create({
+  flex: { flex: 1 },
   safe: { flex: 1, backgroundColor: colors.background },
   container: {
     flexGrow: 1,
@@ -139,64 +119,42 @@ const styles = StyleSheet.create({
     paddingBottom: 24,
   },
   headerColumn: { alignItems: 'center', marginBottom: 24 },
-  tagline: { marginTop: 8, fontSize: 13, color: colors.textMuted },
+  tagline: {
+    marginTop: 8,
+    fontFamily: FontFamily.body,
+    fontSize: 13,
+    color: colors.textMuted,
+  },
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
     padding: 24,
     ...shadow,
   },
-  title: { fontSize: 32, fontWeight: '800', color: colors.primary },
+  title: { fontFamily: FontFamily.title, fontSize: 32, color: colors.primary },
   subtitle: {
+    fontFamily: FontFamily.body,
     fontSize: 13,
     color: colors.text,
     marginTop: 4,
     marginBottom: 24,
   },
-  label: {
+  loginInput: { fontSize: 16 },
+  // O TextField já deixa 20 de espaço embaixo; o -4 mantém os 16 de antes.
+  forgot: { alignSelf: 'flex-end', marginTop: -4, marginBottom: 20 },
+  forgotText: {
+    fontFamily: FontFamily.bodyBold,
     fontSize: 12,
-    fontWeight: '700',
     color: colors.primary,
-    marginBottom: 10,
   },
-  input: {
-    height: 56,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingHorizontal: 14,
-    fontSize: 16,
-    color: colors.text,
-    marginBottom: 20,
-  },
-  passwordWrapper: {
-    height: 56,
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingHorizontal: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  passwordInput: { flex: 1, fontSize: 14, color: colors.text },
-  showText: { fontSize: 12, fontWeight: '700', color: colors.primary },
-  forgot: { alignSelf: 'flex-end', marginTop: 16, marginBottom: 20 },
-  forgotText: { fontSize: 12, fontWeight: '700', color: colors.primary },
-  button: {
-    height: 54,
-    borderRadius: radius.md,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonText: { color: '#FFF', fontSize: 15, fontWeight: '700' },
   signup: {
+    fontFamily: FontFamily.body,
     textAlign: 'center',
     marginTop: 24,
     fontSize: 12,
     color: colors.textMuted,
   },
-  signupLink: { fontWeight: '700', color: colors.primary },
+  signupLink: { fontFamily: FontFamily.bodyBold, color: colors.primary },
   secure: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -204,5 +162,5 @@ const styles = StyleSheet.create({
     gap: 6,
     marginTop: 28,
   },
-  secureText: { fontSize: 11, color: colors.textMuted },
+  secureText: { fontFamily: FontFamily.body, fontSize: 11, color: colors.textMuted },
 });
