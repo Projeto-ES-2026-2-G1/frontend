@@ -11,7 +11,7 @@ export function LogoText({ size = 28, style }: LogoTextProps) {
   return (
     <Text style={[styles.base, { fontSize: size }, style]}>
       <Text style={styles.bold}>Simpli</Text>
-      <Text style={styles.light}>Mei</Text>
+      <Text style={styles.light}>MEI</Text>
     </Text>
   );
 }
