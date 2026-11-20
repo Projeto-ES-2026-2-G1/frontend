@@ -147,7 +147,7 @@ export function CadastroScreenMobile({ onGoToLogin, onSuccess }: CadastroScreenM
               {...bind('CNPJ')}
             />
             <TextField
-              label="E-mail da empresa"
+              label="E-mail da empresa (opcional)"
               placeholder="empresa@dominio.com"
               keyboardType="email-address"
               autoCapitalize="none"
