@@ -28,8 +28,14 @@ export interface CadastroScreenMobileProps {
 
 const INITIAL_FORM: CadastroForm = {
   name: '',
-  document: '',
   email: '',
+  telefone: '',
+  CPF: '',
+  nomeEmpresa: '',
+  nomeFantasia: '',
+  negocio: '',
+  CNPJ: '',
+  emailEmpresa: '',
   password: '',
   confirm: '',
 };
@@ -92,19 +98,61 @@ export function CadastroScreenMobile({ onGoToLogin, onSuccess }: CadastroScreenM
               {...bind('name')}
             />
             <TextField
-              label="CPF / CNPJ"
-              placeholder="000.000.000-00"
-              keyboardType="number-pad"
-              style={styles.documentInput}
-              {...bind('document')}
-            />
-            <TextField
               label="E-mail"
-              placeholder="voce@empresa.com"
+              placeholder="voce@dominio.com"
               keyboardType="email-address"
               autoCapitalize="none"
               autoComplete="email"
               {...bind('email')}
+            />
+            <TextField
+              label="Telefone (opcional)"
+              placeholder="(83) 99999-9999"
+              keyboardType="phone-pad"
+              autoComplete="tel"
+              textContentType="telephoneNumber"
+              maxLength={15}
+              {...bind('telefone')}
+            />
+            <TextField
+              label="CPF (opcional)"
+              placeholder="000.000.000-00"
+              keyboardType="number-pad"
+              style={styles.documentInput}
+              {...bind('CPF')}
+            />
+            <TextField
+              label="Nome da empresa"
+              placeholder="Nome da primeira empresa"
+              autoCapitalize="words"
+              {...bind('nomeEmpresa')}
+            />
+            <TextField
+              label="Nome fantasia da empresa (opcional)"
+              placeholder="Nome fantasia da empresa"
+              autoCapitalize="words"
+              {...bind('nomeFantasia')}
+            />
+            <TextField
+              label="Tipo de negócio (opcional)"
+              placeholder="Tipo de negócio da empresa"
+              autoCapitalize="words"
+              {...bind('negocio')}
+            />
+            <TextField
+              label="CNPJ (opcional)"
+              placeholder="00.000.000/0000-00"
+              keyboardType="number-pad"
+              style={styles.documentInput}
+              {...bind('CNPJ')}
+            />
+            <TextField
+              label="E-mail da empresa"
+              placeholder="empresa@dominio.com"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoComplete="email"
+              {...bind('emailEmpresa')}
             />
             <TextField
               label="Senha"
@@ -153,7 +201,6 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
   container: {
     flexGrow: 1,
-    // A rota é compartilhada com a web: limita a largura para não esticar.
     width: '100%',
     maxWidth: 390,
     alignSelf: 'center',
