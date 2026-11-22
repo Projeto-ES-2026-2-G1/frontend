@@ -14,8 +14,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import { Logo, LogoText } from '@shared/components';
+import { Logo, LogoText, SideDrawer } from '@shared/components';
 import { colors as theme, radius, shadow } from '@shared';
+import { logOut } from '@/features/auth';
+import { router }  from 'expo-router';
 
 const colors = {
   ...theme,
@@ -210,10 +212,12 @@ const KPI_W = SCREEN_W * 0.42;
 const KPI_GAP = 12;
 const LIST_MAX_H = 270;
 
-function Header() {
+function Header({ onLogoPress }: { onLogoPress: () => void }) {
   return (
     <View style={s.headerRow}>
-      <Logo size={44} />
+      <TouchableOpacity onPress={onLogoPress} accessibilityLabel="Abrir menu">
+        <Logo size={44} />
+      </TouchableOpacity>
       <LogoText size={26} style={{ marginLeft: 10 }} />
       <TouchableOpacity style={s.bell} accessibilityLabel="Notificações">
         <Feather name="bell" size={20} color={colors.text} />
@@ -571,8 +575,17 @@ export type DashboardScreenMobileProps = {
   onLogout?: () => void;
 };
 
-export function DashboardScreenMobile(_props: DashboardScreenMobileProps) {
+export function DashboardScreenMobile({onLogout}: DashboardScreenMobileProps) {
   const [query, setQuery] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  function handleLogout() {
+    setMenuOpen(false);
+    if (onLogout) return onLogout();
+    logOut();
+    router.replace('/login');
+  }
+
   return (
     <SafeAreaView edges={['top']} style={s.safe}>
       <StatusBar barStyle="dark-content" />
@@ -581,7 +594,7 @@ export function DashboardScreenMobile(_props: DashboardScreenMobileProps) {
         showsVerticalScrollIndicator={false}
       >
         <View style={s.mx}>
-          <Header />
+          <Header onLogoPress={() => setMenuOpen(true)} />
           <Text style={s.hello}>Olá, bem-vindo de volta</Text>
           <Text style={s.subtitle}>Resumo financeiro de outubro de 2026</Text>
           <View style={s.search}>
@@ -610,6 +623,16 @@ export function DashboardScreenMobile(_props: DashboardScreenMobileProps) {
         <UpcomingDues />
       </ScrollView>
       <BottomTabBar />
+      <SideDrawer
+        visible={menuOpen}
+        onClose={() => setMenuOpen(false)}
+        footer={
+          <TouchableOpacity style={s.logout} onPress={handleLogout} activeOpacity={0.7}>
+            <Feather name="log-out" size={18} color={theme.primary} />
+            <Text style={s.logoutText}>Sair</Text>
+          </TouchableOpacity>
+        }
+      />
     </SafeAreaView>
   );
 }
@@ -626,7 +649,7 @@ const s = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  onPrimary: { color: '#fff' },
+  onPrimary: { color: theme.primarySoft},
   primary: { color: theme.primary },
 
   headerRow: {
@@ -635,22 +658,15 @@ const s = StyleSheet.create({
     justifyContent: 'space-between',
     marginTop: 20,
   },
-  logo: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
+  logout: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 10, 
   },
-  brand: { fontSize: 24, fontWeight: '800', color: colors.primary },
-  bell: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.card,
-    alignItems: 'center',
-    justifyContent: 'center',
+  logoutText: { 
+    fontSize: 14, 
+    fontWeight: '700', 
+    color: theme.primary 
   },
 
   hello: {
