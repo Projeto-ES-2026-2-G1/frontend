@@ -83,7 +83,7 @@ export function LoginScreenMobile({
               secureToggle
             />
 
-            <TouchableOpacity style={styles.forgot} onPress={onForgotPassword}>
+            <TouchableOpacity style={styles.forgot} onPress={() => (onForgotPassword ? onForgotPassword() : router.push('/recuperar-senha'))} accessibilityRole="button" accessibilityLabel="Esqueci minha senha">
               <Text style={styles.forgotText}>Esqueci minha senha</Text>
             </TouchableOpacity>
 
