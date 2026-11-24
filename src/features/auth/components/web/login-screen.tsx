@@ -7,6 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { router, useLocalSearchParams, usePathname } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
   Easing,
@@ -17,9 +18,11 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 import { BrandColors, FontFamily, useResponsive } from '@shared';
-import type { AuthCardHandle } from '../../types';
+import type { AuthCardActive, AuthCardHandle } from '../../types';
+import { ForgotPasswordCard } from './forgot-password-card';
 import { CheckIcon } from './icons';
 import { LoginCard } from './login-card';
+import { ResetPasswordCard } from './reset-password-card';
 import { SignupCard } from './signup-card';
 
 /** Lista de benefícios do painel institucional (lado esquerdo). */
@@ -29,23 +32,93 @@ const BENEFITS = [
   'Relatórios prontos em poucos cliques',
 ];
 
+const DEFAULT_RESET_SUCCESS_MESSAGE =
+  'Senha redefinida com sucesso. Faça login com sua nova senha.';
+
 /** Font-size `clamp(36px, 3.4vw, 48px)` do h1 da apresentação. */
 function getHeadlineFontSize(width: number): number {
   return Math.min(Math.max(36, width * 0.034), 48);
 }
 
+function getSingleParam(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) {
+    return value[0];
+  }
+  return value;
+}
+
+function resolveInitialCard(
+  initialCard: AuthCardActive | undefined,
+  modo: string | undefined,
+  token: string | undefined
+): AuthCardActive {
+  if (initialCard) {
+    return initialCard;
+  }
+
+  if (token?.trim() || modo === 'redefinir') {
+    return 'redefinir';
+  }
+
+  if (modo === 'recuperar') {
+    return 'recuperar';
+  }
+
+  if (modo === 'cadastro') {
+    return 'cadastro';
+  }
+
+  return 'login';
+}
+
+export interface LoginScreenProps {
+  /** Card inicial exibido ao abrir a tela (usado pelas rotas `/recuperar-senha` e `/redefinir-senha`). */
+  initialCard?: AuthCardActive;
+}
+
 /**
- * Tela de login / cadastro (login.html + login.css + login.js).
+ * Tela de acesso web (login, cadastro, recuperação e redefinição de senha).
  * Dois painéis (apresentação à esquerda, cards de acesso à direita)
  * com a troca de cards animada do original.
  */
-export function LoginScreen() {
+export function LoginScreen({ initialCard }: LoginScreenProps = {}) {
   const { width, isLoginStacked } = useResponsive();
   const reducedMotion = useReducedMotion();
+  const pathname = usePathname();
+  const params = useLocalSearchParams<{
+    modo?: string | string[];
+    token?: string | string[];
+    senhaRedefinida?: string | string[];
+  }>();
 
-  const [active, setActive] = useState<'login' | 'cadastro'>('login');
+  const modoParam = getSingleParam(params.modo);
+  const tokenParam = getSingleParam(params.token)?.trim();
+  const senhaRedefinidaParam = getSingleParam(params.senhaRedefinida);
+
+  const [activeOverride, setActiveOverride] = useState<AuthCardActive | null>(
+    null
+  );
+  const [manualResetToken, setManualResetToken] = useState<string | undefined>(
+    undefined
+  );
+  const [manualLoginNotice, setManualLoginNotice] = useState<string | null>(
+    null
+  );
+  const [dismissedRouteNotice, setDismissedRouteNotice] = useState(false);
+
+  const active =
+    activeOverride ?? resolveInitialCard(initialCard, modoParam, tokenParam);
+  const resetToken = manualResetToken ?? tokenParam;
+  const loginNotice =
+    manualLoginNotice ??
+    (!dismissedRouteNotice && senhaRedefinidaParam === '1'
+      ? DEFAULT_RESET_SUCCESS_MESSAGE
+      : null);
+
   const loginCardRef = useRef<AuthCardHandle>(null);
   const signupCardRef = useRef<AuthCardHandle>(null);
+  const forgotCardRef = useRef<AuthCardHandle>(null);
+  const resetCardRef = useRef<AuthCardHandle>(null);
 
   // ---------- Animação de entrada do card (troca entre os cards) ----------
   const entrance = useSharedValue(1);
@@ -75,9 +148,55 @@ export function LoginScreen() {
     }
     /* eslint-enable react-hooks/immutability */
 
-    const destino = active === 'login' ? loginCardRef.current : signupCardRef.current;
+    const destino =
+      active === 'login'
+        ? loginCardRef.current
+        : active === 'cadastro'
+          ? signupCardRef.current
+          : active === 'recuperar'
+            ? forgotCardRef.current
+            : resetCardRef.current;
+
     destino?.focusFirstField();
   }, [active, entrance, reducedMotion]);
+
+  function clearNotices() {
+    setManualLoginNotice(null);
+    setDismissedRouteNotice(true);
+  }
+
+  function handleReturnToLogin() {
+    if (pathname !== '/login') {
+      router.replace('/login');
+      return;
+    }
+    setActiveOverride('login');
+  }
+
+  function handleForgotPassword() {
+    clearNotices();
+    setActiveOverride('recuperar');
+  }
+
+  function handleProceedToReset(token?: string) {
+    if (token) {
+      setManualResetToken(token);
+    }
+    setActiveOverride('redefinir');
+  }
+
+  function handleResetSuccess(message: string) {
+    setManualResetToken(undefined);
+    if (pathname !== '/login') {
+      router.replace({
+        pathname: '/login',
+        params: { senhaRedefinida: '1' },
+      });
+      return;
+    }
+    setManualLoginNotice(message || DEFAULT_RESET_SUCCESS_MESSAGE);
+    setActiveOverride('login');
+  }
 
   const headlineFontSize = getHeadlineFontSize(width);
 
@@ -147,7 +266,16 @@ export function LoginScreen() {
                 active === 'login' ? styles.cardVisible : styles.cardHidden,
               ]}
             >
-              <LoginCard onSwitchToSignup={() => setActive('cadastro')} />
+              <LoginCard
+                ref={loginCardRef}
+                onSwitchToSignup={() => {
+                  clearNotices();
+                  setActiveOverride('cadastro');
+                }}
+                onForgotPassword={handleForgotPassword}
+                successNotice={loginNotice}
+                onDismissNotice={clearNotices}
+              />
             </Animated.View>
 
             <Animated.View
@@ -158,7 +286,42 @@ export function LoginScreen() {
                 active === 'cadastro' ? styles.cardVisible : styles.cardHidden,
               ]}
             >
-              <SignupCard onSwitchToLogin={() => setActive('login')} />
+              <SignupCard
+                ref={signupCardRef}
+                onSwitchToLogin={handleReturnToLogin}
+              />
+            </Animated.View>
+
+            <Animated.View
+              style={[
+                styles.card,
+                isLoginStacked && styles.cardStacked,
+                animatedCard,
+                active === 'recuperar' ? styles.cardVisible : styles.cardHidden,
+              ]}
+            >
+              <ForgotPasswordCard
+                ref={forgotCardRef}
+                onBackToLogin={handleReturnToLogin}
+                onProceedToReset={handleProceedToReset}
+              />
+            </Animated.View>
+
+            <Animated.View
+              style={[
+                styles.card,
+                isLoginStacked && styles.cardStacked,
+                animatedCard,
+                active === 'redefinir' ? styles.cardVisible : styles.cardHidden,
+              ]}
+            >
+              <ResetPasswordCard
+                ref={resetCardRef}
+                initialToken={resetToken}
+                onBackToLogin={handleReturnToLogin}
+                onRequestNewLink={() => setActiveOverride('recuperar')}
+                onResetSuccess={handleResetSuccess}
+              />
             </Animated.View>
           </View>
         </ScrollView>

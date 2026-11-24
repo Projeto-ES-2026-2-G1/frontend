@@ -3,11 +3,20 @@ import type { TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { logIn } from '../../service';
 import type { AuthCardHandle } from '../../types';
-import { ActionLink, AuthCard, PrimaryButton, SwitchNotice } from './auth-card';
+import {
+  ActionLink,
+  AuthCard,
+  FeedbackBanner,
+  PrimaryButton,
+  SwitchNotice,
+} from './auth-card';
 import { Field } from './field';
 
 export interface LoginCardProps {
   onSwitchToSignup: () => void;
+  onForgotPassword?: () => void;
+  successNotice?: string | null;
+  onDismissNotice?: () => void;
 }
 
 /**
@@ -15,7 +24,10 @@ export interface LoginCardProps {
  * o primeiro campo vazio, igual à validação feita no site.
  */
 export const LoginCard = forwardRef<AuthCardHandle, LoginCardProps>(
-  function LoginCard({ onSwitchToSignup }, ref) {
+  function LoginCard(
+    { onSwitchToSignup, onForgotPassword, successNotice, onDismissNotice },
+    ref
+  ) {
     const usuarioRef = useRef<TextInput>(null);
     const senhaRef = useRef<TextInput>(null);
     const [usuario, setUsuario] = useState('');
@@ -28,6 +40,20 @@ export const LoginCard = forwardRef<AuthCardHandle, LoginCardProps>(
       }),
       []
     );
+
+    function handleUsuarioChange(value: string) {
+      setUsuario(value);
+      if (successNotice) {
+        onDismissNotice?.();
+      }
+    }
+
+    function handleSenhaChange(value: string) {
+      setSenha(value);
+      if (successNotice) {
+        onDismissNotice?.();
+      }
+    }
 
     function handleSubmit() {
       const campoVazio = !usuario.trim()
@@ -51,11 +77,15 @@ export const LoginCard = forwardRef<AuthCardHandle, LoginCardProps>(
         title="Entrar"
         subtitle="Acesse sua conta com CPF, CNPJ ou e-mail."
       >
+        {successNotice ? (
+          <FeedbackBanner variant="success" message={successNotice} />
+        ) : null}
+
         <Field
           ref={usuarioRef}
           label="CPF, CNPJ ou e-mail"
           value={usuario}
-          onChangeText={setUsuario}
+          onChangeText={handleUsuarioChange}
           placeholder="000.000.000-00"
           autoComplete="username"
         />
@@ -63,13 +93,15 @@ export const LoginCard = forwardRef<AuthCardHandle, LoginCardProps>(
           ref={senhaRef}
           label="Senha"
           value={senha}
-          onChangeText={setSenha}
+          onChangeText={handleSenhaChange}
           placeholder="Mínimo de 8 caracteres"
           secure
           autoComplete="password"
+          onSubmitEditing={handleSubmit}
         />
-        {/* TODO: fluxo de recuperação de senha (como no site, ainda não leva a lugar nenhum). */}
-        <ActionLink center>Esqueci minha senha</ActionLink>
+        <ActionLink center onPress={onForgotPassword}>
+          Esqueci minha senha
+        </ActionLink>
         <PrimaryButton onPress={handleSubmit}>Entrar</PrimaryButton>
         <SwitchNotice
           notice="Ainda não tem conta?"
