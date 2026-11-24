@@ -8,6 +8,10 @@ export interface FieldProps extends TextInputProps {
   label: string;
   /** Campo de senha: exibe o botão do olho (mostrar / ocultar). */
   secure?: boolean;
+  /** Mensagem de erro de validação exibida abaixo do campo. */
+  error?: string;
+  /** Texto auxiliar exibido quando não há erro. */
+  helperText?: string;
 }
 
 /**
@@ -15,21 +19,46 @@ export interface FieldProps extends TextInputProps {
  * O anel verde de foco reproduz o `:focus-within` do CSS.
  */
 export const Field = forwardRef<TextInput, FieldProps>(function Field(
-  { label, secure = false, style, ...textInputProps },
+  {
+    label,
+    secure = false,
+    error,
+    helperText,
+    editable = true,
+    onFocus,
+    onBlur,
+    style,
+    ...textInputProps
+  },
   ref
 ) {
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const hasError = Boolean(error);
 
   return (
     <View style={styles.field}>
       <Text style={styles.label}>{label}</Text>
-      <View style={[styles.box, isFocused && styles.boxFocused]}>
+      <View
+        style={[
+          styles.box,
+          !editable && styles.boxDisabled,
+          hasError && styles.boxError,
+          isFocused && (hasError ? styles.boxErrorFocused : styles.boxFocused),
+        ]}
+      >
         <TextInput
           ref={ref}
           style={[styles.input, style]}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
+          editable={editable}
+          onFocus={(event) => {
+            setIsFocused(true);
+            onFocus?.(event);
+          }}
+          onBlur={(event) => {
+            setIsFocused(false);
+            onBlur?.(event);
+          }}
           secureTextEntry={secure ? !isPasswordVisible : undefined}
           placeholderTextColor="rgba(91, 102, 96, 0.75)"
           {...textInputProps}
@@ -37,10 +66,16 @@ export const Field = forwardRef<TextInput, FieldProps>(function Field(
 
         {secure && (
           <Pressable
-            style={({ pressed }) => [styles.eyeButton, pressed && styles.eyeButtonPressed]}
+            style={({ pressed }) => [
+              styles.eyeButton,
+              pressed && styles.eyeButtonPressed,
+            ]}
             accessibilityRole="button"
-            accessibilityLabel={isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'}
+            accessibilityLabel={
+              isPasswordVisible ? 'Ocultar senha' : 'Mostrar senha'
+            }
             accessibilityState={{ selected: isPasswordVisible }}
+            disabled={!editable}
             onPress={() => setIsPasswordVisible((prev) => !prev)}
           >
             {/* Senha oculta = olho fechado; senha visível = olho aberto. */}
@@ -52,6 +87,14 @@ export const Field = forwardRef<TextInput, FieldProps>(function Field(
           </Pressable>
         )}
       </View>
+
+      {hasError ? (
+        <Text style={styles.errorText} accessibilityRole="alert">
+          {error}
+        </Text>
+      ) : helperText ? (
+        <Text style={styles.helperText}>{helperText}</Text>
+      ) : null}
     </View>
   );
 });
@@ -63,6 +106,7 @@ const styles = StyleSheet.create({
   label: {
     fontFamily: FontFamily.bodyBold,
     fontSize: 15,
+    color: BrandColors.text,
   },
   box: {
     flexDirection: 'row',
@@ -76,9 +120,20 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     backgroundColor: BrandColors.white,
   },
+  boxDisabled: {
+    backgroundColor: '#F3F5F2',
+    opacity: 0.75,
+  },
   boxFocused: {
     borderColor: BrandColors.darkGreen,
     boxShadow: '0 0 0 3px rgba(151, 191, 138, 0.45)',
+  },
+  boxError: {
+    borderColor: BrandColors.toPayText,
+  },
+  boxErrorFocused: {
+    borderColor: BrandColors.toPayText,
+    boxShadow: '0 0 0 3px rgba(140, 43, 43, 0.2)',
   },
   input: {
     flex: 1,
@@ -99,5 +154,17 @@ const styles = StyleSheet.create({
   },
   eyeButtonPressed: {
     backgroundColor: BrandColors.lightGray,
+  },
+  errorText: {
+    fontFamily: FontFamily.bodyMedium,
+    fontSize: 13,
+    lineHeight: 18,
+    color: BrandColors.toPayText,
+  },
+  helperText: {
+    fontFamily: FontFamily.body,
+    fontSize: 13,
+    lineHeight: 18,
+    color: BrandColors.textSoft,
   },
 });
