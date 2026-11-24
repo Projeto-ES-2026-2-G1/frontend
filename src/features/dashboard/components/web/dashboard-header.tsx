@@ -7,6 +7,7 @@ import {
   View,
 } from 'react-native';
 import { BrandColors, FontFamily, formatMonthYear } from '@shared';
+import { ActiveCompanySelector } from '@features/companies/components/web/active-company-selector';
 import type { FinancialContext } from '../../types';
 import { ContextSelector } from './context-selector';
 import { PlusIcon } from './icons';
@@ -36,6 +37,8 @@ export function DashboardHeader({ context, onChange, isCompact = false }: Dashbo
       </View>
 
       <View style={[styles.actions, isCompact && styles.actionsCompact]}>
+        <ActiveCompanySelector fullWidth={isCompact} />
+
         <ContextSelector value={context} onChange={onChange} />
 
         <TextInput
