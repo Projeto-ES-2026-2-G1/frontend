@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { BrandColors } from '@shared';
 import { useResponsive } from '@shared/hooks';
 import { isLoggedIn } from '@features/auth';
+import { useCompanies } from '@features/companies/context';
 import type { FinancialContext } from '../../types';
 import { CategoryBreakdown } from './category-breakdown';
 import { CashFlowChart } from './cash-flow-chart';
@@ -46,11 +47,17 @@ function DashboardLine({ split, first, second }: DashboardLineProps) {
  */
 export function DashboardScreen() {
   const { columns, isCardsStacked, isMenuInline } = useResponsive();
+  const { activeCompany } = useCompanies();
   const [context, setContext] = useState<FinancialContext>('todos');
 
   if (!isLoggedIn()) {
     return <Redirect href="/login" />;
   }
+
+  const saldoNote =
+    context === 'empresa' && activeCompany
+      ? `Contas de ${activeCompany.name}`
+      : CONTEXT_NOTES[context];
 
   return (
     <SafeAreaView
@@ -69,7 +76,7 @@ export function DashboardScreen() {
         >
           <DashboardHeader context={context} onChange={setContext} isCompact={isMenuInline} />
 
-          <FinancialIndicators saldoNote={CONTEXT_NOTES[context]} columns={columns} />
+          <FinancialIndicators saldoNote={saldoNote} columns={columns} />
 
           <DashboardLine split={!isCardsStacked} first={<CashFlowChart />} second={<UpcomingDues />} />
 

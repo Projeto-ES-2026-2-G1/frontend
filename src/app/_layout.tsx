@@ -15,6 +15,7 @@ import {
   Outfit_600SemiBold,
 } from '@expo-google-fonts/outfit';
 import { queryClient } from '@shared/api';
+import { CompanyProvider } from '@features/companies';
 
 // A tela só é montada com as fontes carregadas, então a splash pode
 // ficar visível até lá.
@@ -44,8 +45,10 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        <Stack screenOptions={{ headerShown: false }} />
-        <StatusBar style="auto" />
+        <CompanyProvider>
+          <Stack screenOptions={{ headerShown: false }} />
+          <StatusBar style="auto" />
+        </CompanyProvider>
       </QueryClientProvider>
     </SafeAreaProvider>
   );

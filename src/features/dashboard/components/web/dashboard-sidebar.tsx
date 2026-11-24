@@ -4,6 +4,8 @@ import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { router, usePathname } from 'expo-router';
 import { BrandColors, FontFamily } from '@shared';
 import { logOut } from '@features/auth';
+import { useCompanies } from '@features/companies/context';
+import { getCompanyInitials } from '@features/companies/validation';
 import {
   AccountsIcon,
   CashFlowIcon,
@@ -19,23 +21,20 @@ import {
 
 interface MenuItem {
   /** Destino do item ("#" = ainda sem tela, como no site). */
-  href: '/dashboard' | '#';
+  href: '/dashboard' | '/empresas' | '#';
   label: string;
   Icon: ComponentType<DashboardIconProps>;
 }
 
 const BRAND = 'Gestão na Mão';
 
-// Mesmos itens e ícones do menu.js. "Empresas" e "Contas" apontavam para
-// páginas que não existem no site (empresas.html / contas.html); continuam
-// inertes até as telas existirem.
 const MENU_ITEMS: MenuItem[] = [
   { href: '/dashboard', label: 'Início', Icon: HomeIcon },
   { href: '#', label: 'Receitas', Icon: IncomeIcon },
   { href: '#', label: 'Despesas', Icon: ExpenseIcon },
   { href: '#', label: 'Fluxo de caixa', Icon: CashFlowIcon },
-  // TODO: criar as telas de Empresas e Contas (referências do menu original).
-  { href: '#', label: 'Empresas', Icon: CompanyIcon },
+  { href: '/empresas', label: 'Empresas', Icon: CompanyIcon },
+  // TODO: criar a tela de Contas (F4.4).
   { href: '#', label: 'Contas', Icon: AccountsIcon },
   { href: '#', label: 'Clientes', Icon: CustomersIcon },
   { href: '#', label: 'Relatórios', Icon: ReportIcon },
@@ -53,7 +52,15 @@ export interface DashboardSidebarProps {
  */
 export function DashboardSidebar({ isCompact = false }: DashboardSidebarProps) {
   const pathname = usePathname();
+  const { activeCompany } = useCompanies();
   const itemIsCurrent = (href: string) => href !== '#' && pathname === href;
+
+  const companyName = activeCompany?.name ?? 'Nenhuma empresa';
+  const companySubtitle =
+    activeCompany?.businessType ??
+    activeCompany?.tradeName ??
+    (activeCompany?.isPrimary ? 'Empresa principal' : 'Empresa ativa');
+  const companyInitials = activeCompany ? getCompanyInitials(activeCompany.name) : 'ME';
 
   function openItem(item: MenuItem) {
     // Itens sem tela não navegam (o site também impedia esses links).
@@ -121,11 +128,15 @@ export function DashboardSidebar({ isCompact = false }: DashboardSidebarProps) {
       {/* Perfil (rodapé do menu) */}
       <View style={styles.profile}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>ME</Text>
+          <Text style={styles.avatarText}>{companyInitials}</Text>
         </View>
-        <View>
-          <Text style={styles.profileName}>Minha empresa</Text>
-          <Text style={styles.profileType}>Microempreendedor</Text>
+        <View style={styles.profileInfo}>
+          <Text numberOfLines={1} style={styles.profileName}>
+            {companyName}
+          </Text>
+          <Text numberOfLines={1} style={styles.profileType}>
+            {companySubtitle}
+          </Text>
         </View>
         <Pressable
           style={styles.signOut}
@@ -242,6 +253,10 @@ const styles = StyleSheet.create({
     fontFamily: FontFamily.title,
     fontSize: 14,
     color: BrandColors.darkGreen,
+  },
+  profileInfo: {
+    flex: 1,
+    minWidth: 0,
   },
   profileName: {
     fontFamily: FontFamily.bodyBold,
